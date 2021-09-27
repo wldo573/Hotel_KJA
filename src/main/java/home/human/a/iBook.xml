@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="home.human.a.iBook">	
+	<insert id ='dogetBook'>
+		insert into book values (seq_bookcode.nextval,
+		#{param1},#{param2},#{param3},#{param4},#{param5},#{param6},#{param7})
+	</insert>
+	<select id ='dofindBook' resultType="home.human.a.Book">
+		<![CDATA[
+		select b.roomcode,a.bookcode,b.name,c.name typename,b.howmany,a.howmany max_howmany,a.day1,a.day2,total,a.name username,mobile
+		from book a, room b,roomtype c
+		where a.day2 > #{param2} and a.day1 < #{param1}
+        and b.type = c.typecode
+		and a.roomcode=b.roomcode
+		order by a.day1
+		]]>
+	</select>
+	<select id='doAddBooking' resultType="home.human.a.Booking">
+		<![CDATA[
+		select a.roomcode,a.name,b.name type,a.howmany,a.howmuch
+    	from room a, roomtype b
+    	where roomcode in
+    	(select roomcode from room
+    	minus
+    	select distinct roomcode from book
+    	where day2 > #{param2}  and day1 > #{param1}
+    	)
+    	and a.type=b.typecode
+		]]>
+	</select>
+	<delete id ="doDeleteBook">
+		delete from book where roomcode=#{param1}
+	</delete>
+	<update id="doUpdateBook">
+		update book set howmany=#{param2},name=#{param3},mobile=#{param4}
+		where bookcode=#{param1}
+	</update>
+</mapper>
